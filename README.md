@@ -62,3 +62,6 @@ GOOS=darwin GOARCH=arm64 go build -o q-brow-mac-arm
 ## ライセンス
 
 [MIT License](./LICENSE)
+
+## その他
+配布しているバイナリが実行できない際は[Issues](issues)、または[こちら](https://daruks.com/contact/)へお問い合わせをお願いいたします。
