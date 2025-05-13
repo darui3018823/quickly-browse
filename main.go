@@ -4,50 +4,67 @@ import (
 	"flag"
 	"fmt"
 	"net/url"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 )
 
 func main() {
-	// フラグ定義
+	// 検索エンジンオプション
 	useGoogle := flag.Bool("g", false, "Search with Google (default)")
-	// 他のオプション（今後）: -y, -t など
-	flag.Parse()
+	useYouTube := flag.Bool("y", false, "Search with YouTube")
+	useTwitter := flag.Bool("t", false, "Search with Twitter")
+	useDuck := flag.Bool("d", false, "Search with DuckDuckGo")
 
-	// 検索クエリ取得
-	queryArgs := flag.Args()
-	if len(queryArgs) == 0 {
-		fmt.Println("Usage: q-brow [-g] \"search terms\"")
+	// ヘルプテキストの上書き
+	flag.Usage = func() {
+		fmt.Println("Usage:")
+		fmt.Println("  q-brow [options] \"search terms\"")
+		fmt.Println()
+		fmt.Println("Options:")
+		fmt.Println("  -g          Search with Google (default)")
+		fmt.Println("  -y          Search with YouTube")
+		fmt.Println("  -t          Search with Twitter")
+		fmt.Println("  -d          Search with DuckDuckGo")
+		fmt.Println("  --help      Show this help message")
+	}
+
+	flag.Parse()
+	args := flag.Args()
+
+	// ヘルプ強制表示
+	if len(args) == 0 {
+		flag.Usage()
 		return
 	}
-	query := strings.Join(queryArgs, " ")
+
+	query := strings.Join(args, " ")
 	encoded := url.QueryEscape(query)
 
-	// デフォルトはGoogle
-	searchURL := "https://www.google.com/search?q=" + encoded
-	if *useGoogle {
-		// 明示的に -g を指定した場合もGoogle
+	// 検索エンジンの選択
+	searchURL := "https://www.google.com/search?q=" + encoded // デフォルト: Google
+	switch {
+	case *useGoogle:
 		searchURL = "https://www.google.com/search?q=" + encoded
+	case *useYouTube:
+		searchURL = "https://www.youtube.com/results?search_query=" + encoded
+	case *useTwitter:
+		searchURL = "https://twitter.com/search?q=" + encoded
+	case *useDuck:
+		searchURL = "https://duckduckgo.com/?q=" + encoded
 	}
 
-	// 実行ファイル名から呼び出し名を取得（optional: for debug/logging）
-	binName := strings.ToLower(os.Args[0])
-	if strings.Contains(binName, "quickly-browse") || strings.Contains(binName, "q-brow") {
-		// OK, future: you could swap behavior by binary name
-	}
+	// プラットフォーム別の開き方
+	openBrowser(searchURL)
+}
 
-	// OS別にブラウザで開く
-	if runtime.GOOS == "windows" {
-		exec.Command("cmd", "/c", "start", "", searchURL).Run()
-	} else {
-		cmd := "xdg-open"
-		if runtime.GOOS == "darwin" {
-			cmd = "open"
-		}
-		exec.Command(cmd, searchURL).Run()
+func openBrowser(url string) {
+	switch runtime.GOOS {
+	case "windows":
+		exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Run()
+	case "darwin":
+		exec.Command("open", url).Run()
+	default:
+		exec.Command("xdg-open", url).Run()
 	}
-
-	fmt.Printf("Searching: %s\n", query)
 }
