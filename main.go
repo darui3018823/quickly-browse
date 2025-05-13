@@ -4,12 +4,37 @@ import (
 	"flag"
 	"fmt"
 	"net/url"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	"syscall"
+	"unsafe"
 )
 
+var (
+	user32          = syscall.NewLazyDLL("user32.dll")
+	procMessageBoxW = user32.NewProc("MessageBoxW")
+)
+
+func showHelp() {
+	if runtime.GOOS == "windows" {
+		showWindowsHelpDialog()
+	} else {
+		// macOSやLinux用は後で実装
+	}
+}
+
 func main() {
+	flag.Parse()
+	args := flag.Args()
+
+	// --helpまたは-hを含んでいたらダイアログでヘルプを表示
+	if len(args) == 0 || containsHelpFlag(os.Args[1:]) {
+		showHelp()
+		return
+	}
+
 	// 検索エンジンオプション
 	useGoogle := flag.Bool("g", false, "Search with Google (default)")
 	useYouTube := flag.Bool("y", false, "Search with YouTube")
@@ -28,9 +53,6 @@ func main() {
 		fmt.Println("  -d          Search with DuckDuckGo")
 		fmt.Println("  --help      Show this help message")
 	}
-
-	flag.Parse()
-	args := flag.Args()
 
 	// ヘルプ強制表示
 	if len(args) == 0 {
@@ -67,4 +89,34 @@ func openBrowser(url string) {
 	default:
 		exec.Command("xdg-open", url).Run()
 	}
+}
+
+func containsHelpFlag(args []string) bool {
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			return true
+		}
+	}
+	return false
+}
+
+func showWindowsHelpDialog() {
+	title := "q-brow Help"
+	content := `Usage:
+  q-brow [options] "search terms"
+
+Options:
+  -g        Google
+  -y        YouTube
+  -t        Twitter
+  -d        DuckDuckGo
+  --help    Show this message
+`
+
+	procMessageBoxW.Call(
+		0,
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(content))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
+		0x00000040, // MB_ICONINFORMATION
+	)
 }
