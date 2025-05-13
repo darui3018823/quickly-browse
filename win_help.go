@@ -1,6 +1,7 @@
 //go:build windows
 // +build windows
 
+// 2025 darui3018823 All rights reserved.
 package main
 
 import (
@@ -14,7 +15,7 @@ var (
 )
 
 func showWindowsHelpDialog() {
-	title := "q-brow Help"
+	title := "Quickly-Browse Help"
 	content := `Usage:
   q-brow [options] "search terms"
 

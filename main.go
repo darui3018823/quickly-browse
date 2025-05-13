@@ -1,3 +1,4 @@
+// 2025 darui3018823 All rights reserved.
 package main
 
 import (
