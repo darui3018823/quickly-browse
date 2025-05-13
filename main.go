@@ -9,7 +9,6 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
-	"unsafe"
 )
 
 var (
@@ -99,27 +98,6 @@ func containsHelpFlag(args []string) bool {
 		}
 	}
 	return false
-}
-
-func showWindowsHelpDialog() {
-	title := "q-brow Help"
-	content := `Usage:
-  q-brow [options] "search terms"
-
-Options:
-  -g        Google
-  -y        YouTube
-  -t        Twitter
-  -d        DuckDuckGo
-  --help    Show this message
-`
-
-	procMessageBoxW.Call(
-		0,
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(content))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
-		0x00000040, // MB_ICONINFORMATION
-	)
 }
 
 func showMacHelpDialog() {
