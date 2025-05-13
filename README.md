@@ -1,7 +1,8 @@
 # quickly-browse (`q-brow`)
 
-**quickly-browse** は、コマンドラインや `Win + R` から一瞬で検索できる軽量CLIツールです。  
-Google、YouTube、Twitter、DuckDuckGo などの検索に対応し、指定したキーワードを即座に既定ブラウザで開きます。
+**quickly-browse** は、コマンドラインや `Win + R` から一瞬で検索できる軽量CLIツールです。  <br>
+Google、YouTube、Twitter、DuckDuckGo などの検索に対応し、指定したキーワードを即座に既定ブラウザで開きます。<br>
+macOS向けにも提供を行いますが、現時点ではWindows向けに最適化を行い、macOSは後になっております。
 
 ## 特徴
 
@@ -45,7 +46,7 @@ q-brow -d "プライバシー重視 ブラウザ"
 
 > 中身のファイルをそのまま `Win + R` から呼び出せる場所に置いてください（`C:\Windows`などにコピーすると便利です）
 
-## 🔧 ビルド方法（開発者向け）
+## ビルド方法（開発者向け）
 
 ```sh
 # Windows
@@ -58,6 +59,6 @@ GOOS=darwin GOARCH=amd64 go build -o q-brow-mac-intel
 GOOS=darwin GOARCH=arm64 go build -o q-brow-mac-arm
 ```
 
-## 📝 ライセンス
+## ライセンス
 
 [MIT License](./LICENSE)
