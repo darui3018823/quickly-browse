@@ -18,19 +18,18 @@ var (
 )
 
 func showHelp() {
-	if runtime.GOOS == "windows" {
+	switch runtime.GOOS {
+	case "windows":
 		showWindowsHelpDialog()
-	} else {
-		// macOSやLinux用は後で実装
+	case "darwin":
+		showMacHelpDialog()
+	default:
+		// Linuxは対応予定
 	}
 }
 
 func main() {
-	flag.Parse()
-	args := flag.Args()
-
-	// --helpまたは-hを含んでいたらダイアログでヘルプを表示
-	if len(args) == 0 || containsHelpFlag(os.Args[1:]) {
+	if containsHelpFlag(os.Args[1:]) {
 		showHelp()
 		return
 	}
@@ -54,9 +53,11 @@ func main() {
 		fmt.Println("  --help      Show this help message")
 	}
 
-	// ヘルプ強制表示
+	flag.Parse()
+	args := flag.Args()
+
 	if len(args) == 0 {
-		flag.Usage()
+		showHelp()
 		return
 	}
 
@@ -119,4 +120,19 @@ Options:
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
 		0x00000040, // MB_ICONINFORMATION
 	)
+}
+
+func showMacHelpDialog() {
+	content := `Usage:
+  q-brow [options] "search terms"
+
+Options:
+  -g        Google
+  -y        YouTube
+  -t        Twitter
+  -d        DuckDuckGo
+  --help    Show this message
+`
+	appleScript := fmt.Sprintf(`display dialog "%s" with title "q-brow Help"`, content)
+	exec.Command("osascript", "-e", appleScript).Run()
 }
