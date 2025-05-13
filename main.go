@@ -8,12 +8,6 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	"syscall"
-)
-
-var (
-	user32          = syscall.NewLazyDLL("user32.dll")
-	procMessageBoxW = user32.NewProc("MessageBoxW")
 )
 
 func showHelp() {

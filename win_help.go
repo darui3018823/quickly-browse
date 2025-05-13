@@ -8,6 +8,11 @@ import (
 	"unsafe"
 )
 
+var (
+	user32          = syscall.NewLazyDLL("user32.dll")
+	procMessageBoxW = user32.NewProc("MessageBoxW")
+)
+
 func showWindowsHelpDialog() {
 	title := "q-brow Help"
 	content := `Usage:
