@@ -6,7 +6,7 @@ Remove-Item ./dist/win/q-brow.exe -Force
 
 $env:GOOS = "windows"
 $env:GOARCH = "amd64"
-go build -ldflags="-H=windowsgui" -o ./dist/win/q-brow.exe main.go
+go build -ldflags="-H=windowsgui" -o ./dist/win/q-brow.exe
 Remove-Item Env:GOOS
 Remove-Item Env:GOARCH
 Write-Host "Building completed."
